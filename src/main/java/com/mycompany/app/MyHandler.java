@@ -1,13 +1,20 @@
 package com.mycompany.app;
 
 
-import org.eclipse.jetty.server.handler.DefaultHandler;
+
+import java.util.ArrayList;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 
 public class MyHandler extends DefaultHandler {
 
-	int id;
+	private ArrayList<Entry> list;
+	private Entry entry;
+	
+	String id;
 	String firstname;
 	String lastname;
 	
@@ -18,26 +25,30 @@ public class MyHandler extends DefaultHandler {
 	public String result() {
 		return id + "\n" + firstname + "\n" + lastname;
 	}
+	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		
 		if(qName.equals("ENTITY")) {
 			readId = true;
-			id = Integer.parseInt(attributes.getValue("Id"));
+			id = attributes.getValue("Id");
+			
+			entry = new Entry();
+			entry.setId(id);
 		}
-		else if(qName.equalsIgnoreCase("firstname")) {
+		else if(qName.equalsIgnoreCase("FIRSTNAME")) {
 			readFirstname = true;
 		}
-		else if(qName.equalsIgnoreCase("lastname")) {
+		else if(qName.equalsIgnoreCase("LASTNAME")) {
 			readLastname = true;		
 		}
 	}
-	
+	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException{
 		if(qName.equals("ENTITY")) {
-			
+			list.add(entry);
 		}			
 	}
-
+	@Override
 	public void characters(char ch[], int start, int length) throws SAXException {
 		String data = new String(ch, start, length);
 		
@@ -53,5 +64,8 @@ public class MyHandler extends DefaultHandler {
 			readId = false;
 		}
 		
+	}
+	public ArrayList<Entry> getList() {
+		return list;
 	}
 }
