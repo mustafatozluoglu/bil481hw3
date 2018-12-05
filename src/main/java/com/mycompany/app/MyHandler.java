@@ -13,6 +13,7 @@ public class MyHandler extends DefaultHandler {
 
 	private ArrayList<Entry> list;
 	private Entry entry;
+	private String sb = null;
 	
 	String id;
 	String firstname;
@@ -41,29 +42,28 @@ public class MyHandler extends DefaultHandler {
 		else if(qName.equalsIgnoreCase("LASTNAME")) {
 			readLastname = true;		
 		}
+		sb = new String();
 	}
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException{
+	
+		
+		if(readFirstname) {
+			entry.setFirstname(sb);
+			readFirstname = false;
+		}
+		if(readLastname) {
+			entry.setLastname(sb);
+			readLastname = false;
+		}
 		if(qName.equals("ENTITY")) {
 			list.add(entry);
-		}			
+		}
 	}
 	@Override
 	public void characters(char ch[], int start, int length) throws SAXException {
-		String data = new String(ch, start, length);
-		
-		if(readFirstname) {
-			firstname = data;
-			readFirstname = false;
-		}
-		else if(readLastname) {
-			lastname = data;
-			readLastname = false;
-		}
-		else if(readId) {
-			readId = false;
-		}
-		
+		sb += new String(ch, start, length);
+			
 	}
 	public ArrayList<Entry> getList() {
 		return list;
